@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 //Gets the functions from the controller file
-const { createCourse, getCourses, getCourseById } = require("../controllers/courseController");
+const { createCourse, getCourses, getCourseById, deleteCourse } = require("../controllers/courseController");
 
 //Tells if someone send POST to / -> run createCourse
 router.post("/", createCourse);
@@ -14,8 +14,11 @@ router.post("/", createCourse);
 //Tells if someone send GET to / -> run getCourses
 router.get("/", getCourses);
 
-//Tells if someone send GET by id to / -> run getCourses
+//Tells if someone send GET by id to / -> run getCoursesById
 router.get("/:id", getCourseById);
+
+//Tells if someone send DELETE by id to / -> run deleteCourse
+router.delete("/:id", deleteCourse);
 
 
 module.exports = router;
