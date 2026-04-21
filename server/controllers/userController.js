@@ -131,4 +131,67 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {createUser, getUsers, getUserById, deleteUser};
+
+// ----- Update user -----
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let { name, email, password, courses } = req.body;
+
+        // Check required fields
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "Name, email and password are required"
+            });
+        }
+
+        // Normalize email
+        email = email.trim().toLowerCase();
+
+        // Check email format
+        if (!email.includes("@")) {
+            return res.status(400).json({
+                message: "Invalid email format"
+            });
+        }
+
+        // Check duplicate email on another user
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser && existingUser._id.toString() !== id) {
+            return res.status(409).json({
+                message: "A user with this email already exists"
+            });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            {
+                name,
+                email,
+                password,
+                courses: courses || []
+            },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        return res.status(200).json({
+            message: "User updated successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error updating user",
+            error: error.message
+        });
+    }
+};
+
+module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser};

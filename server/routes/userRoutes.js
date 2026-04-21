@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 // Gets the functions from the controller file
-const { createUser, getUsers, getUserById, deleteUser } = require("../controllers/userController");
+const { createUser, getUsers, getUserById, deleteUser, updateUser } = require("../controllers/userController");
 
 // Tells if someone sends POST to / -> run createUser
 router.post("/", createUser);
@@ -17,7 +17,10 @@ router.get("/", getUsers);
 // Tells if someone sends GET to /:id -> run getUserById
 router.get("/:id", getUserById);
 
-// Tells if someone sends DELETE to /:id -> run deleteUserById
+// Tells if someone sends DELETE to /:id -> run deleteUser
 router.delete("/:id", deleteUser);
+
+// Tells if someone sends PUT to /:id -> run updateUser
+router.put("/:id", updateUser);
 
 module.exports = router;
