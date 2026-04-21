@@ -53,4 +53,21 @@ const createCourse = async (req, res) => {
 };
 
 
-module.exports = { createCourse};
+// ----- Get Courses ----
+const getCourses = async (req, res) => {
+    try {
+        const courses = await Course.find();
+
+        if (courses.length === 0){
+            return res.json({message: "No courses found"});
+        }
+        
+        res.status(200).json(courses);
+
+    } catch (error){
+        res.status(500).json({ message: "Error fetching courses", error: error.message});
+    }
+};
+
+
+module.exports = { createCourse, getCourses};
