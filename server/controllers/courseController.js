@@ -104,4 +104,46 @@ const deleteCourse = async (req,res) => {
 };
 
 
-module.exports = { createCourse, getCourses, getCourseById, deleteCourse };
+// ----- Update course -----
+const updateCourse = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const { name, code, program, semester, credits } = req.body;
+
+        //Check required fields
+        if (!name || !code || credits === undefined) {
+            return res.status(400).json({message: "Name, code and credits are required"})
+        }
+
+        //Check that credits are a number
+        if (typeof credits !== "number" || isNaN(credits)) {
+            return res.status(400).json({message: "Credits must be a number"})
+        }
+
+        //Check that credits is not negative
+        if (credits < 0) {
+            return res.status(400).json({message: "Credits cannot be negative"})
+        }
+
+        //Check for duplicate course code
+        const existingCourse = await Course.findOne({ code });
+
+        if (existingCourse && existingCourse._id.toString() !== id) {
+            return res.status(409).json({message: "A course with this course code already exists"})
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(id, {name, code, program, semester, credits}, {new: true});
+
+        if (!updateCourse) {
+            return res.status(404).json({message: "Course not found"});
+        }
+
+        return res.status(200).json({message: "Course updated successfully", course: updateCourse});
+
+    } catch (error) {
+        return res.status(500).json({message: "Error updating course", error: error.message});
+    }
+};
+
+
+module.exports = { createCourse, getCourses, getCourseById, deleteCourse, updateCourse };
