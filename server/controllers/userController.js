@@ -1,6 +1,7 @@
 // logic + imports User + creates/fetches users in db
 
 const User = require("../models/User");
+const Course = require("../models/Course");
 
 
 // ----- Create user -----
@@ -194,4 +195,67 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser};
+
+// ----- Add course to user -----
+const addCourseToUser = async (req, res) => {
+    try {
+        // Get user id from URL and course id from body
+        const { id } = req.params;
+        const { courseId } = req.body;
+
+        // Check if courseId was sent
+        if (!courseId) {
+            return res.status(400).json({
+                message: "courseId is required"
+            });
+        }
+
+        // Check if user exists
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        // Check if course exists
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found"
+            });
+        }
+
+        // Check if course is already added to user
+        const alreadyAdded = user.courses.some(course => course.toString() === courseId);
+
+        if (alreadyAdded) {
+            return res.status(409).json({
+                message: "Course already added to user"
+            });
+        }
+
+        // Add course to user's courses array
+        user.courses.push(courseId);
+        await user.save();
+
+        // Return updated user with populated courses
+        const updatedUser = await User.findById(id).populate("courses");
+
+        return res.status(200).json({
+            message: "Course added to user successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error adding course to user",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser};
