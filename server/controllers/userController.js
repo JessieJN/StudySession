@@ -258,7 +258,7 @@ const addCourseToUser = async (req, res) => {
         user.courses.push(courseId);
         await user.save();
 
-        // Return updated user with populated courses (without password)
+        // Return updated user with populated courses 
         const updatedUser = await User.findById(id)
             .select("-password")
             .populate("courses");
@@ -277,4 +277,68 @@ const addCourseToUser = async (req, res) => {
 };
 
 
-module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser};
+// ----- Remove course from user -----
+const removeCourseFromUser = async (req, res) => {
+    try {
+        // Get user id from URL and course id from body
+        const { id } = req.params;
+        const { courseId } = req.body;
+
+        // Check if courseId was sent
+        if (!courseId) {
+            return res.status(400).json({
+                message: "courseId is required"
+            });
+        }
+
+        // Check if user exists
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        // Check if course exists
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found"
+            });
+        }
+
+        // Check if course is actually in user's list
+        const hasCourse = user.courses.some(c => c.toString() === courseId);
+
+        if (!hasCourse) {
+            return res.status(404).json({
+                message: "Course not found in user's course list"
+            });
+        }
+
+        // Remove course from user's courses array
+        user.courses = user.courses.filter(c => c.toString() !== courseId);
+        await user.save();
+
+        // Return updated user with populated courses
+        const updatedUser = await User.findById(id)
+            .select("-password")
+            .populate("courses");
+
+        return res.status(200).json({
+            message: "Course removed from user successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error removing course from user",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser};

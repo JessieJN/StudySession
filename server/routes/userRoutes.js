@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 // Gets the functions from the controller file
-const { createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser } = require("../controllers/userController");
+const { createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser } = require("../controllers/userController");
 
 // Tells if someone sends POST to / -> run createUser
 router.post("/", createUser);
@@ -24,5 +24,8 @@ router.delete("/:id", deleteUser);
 router.put("/:id", updateUser);
 // Add course to user array using PUT
 router.put("/:id/add-course", addCourseToUser);
+
+////Remove course from user
+router.put("/:id/remove-course", removeCourseFromUser);
 
 module.exports = router;
