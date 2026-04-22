@@ -8,7 +8,10 @@ const Course = require("../models/Course");
 const createUser = async (req, res) => {
     try {
         // Get data from request body
-        const { name, email, password, courses } = req.body;
+        let { name, email, password, courses } = req.body;
+
+        // Normalize email
+        email = email.trim().toLowerCase();
 
         // Check required fields
         if (!name || !email || !password) {
@@ -25,6 +28,7 @@ const createUser = async (req, res) => {
                 message: "A user with this email already exists"
             });
         }
+
         // Check email format
         if (!email.includes("@")) {
             return res.status(400).json({
@@ -47,10 +51,15 @@ const createUser = async (req, res) => {
             courses: courses || []
         });
 
+        // Get user again without password
+        const safeUser = await User.findById(newUser._id)
+            .select("-password")
+            .populate("courses");
+
         // Send response message
         return res.status(201).json({
             message: "User created successfully",
-            user: newUser
+            user: safeUser
         });
 
     } catch (error) {
@@ -66,7 +75,7 @@ const createUser = async (req, res) => {
 const getUsers = async (req, res) => {
     try {
         // Find all users in db
-        const users = await User.find().populate("courses");
+        const users = await User.find().select("-password").populate("courses");
 
         // Send all users
         return res.status(200).json(users);
@@ -87,7 +96,7 @@ const getUserById = async (req, res) => {
         const { id } = req.params;
 
         // Find user by id
-        const user = await User.findById(id).populate("courses");
+        const user = await User.findById(id).select("-password").populate("courses");
 
         if (!user) {
             return res.status(404).json({
@@ -156,6 +165,15 @@ const updateUser = async (req, res) => {
             });
         }
 
+        // Check if user exists FIRST
+        const existingUserById = await User.findById(id);
+
+        if (!existingUserById) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
         // Check duplicate email on another user
         const existingUser = await User.findOne({ email });
 
@@ -176,15 +194,14 @@ const updateUser = async (req, res) => {
             { new: true }
         );
 
-        if (!updatedUser) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
+        // Get updated user without password
+        const safeUser = await User.findById(id)
+            .select("-password")
+            .populate("courses");
 
         return res.status(200).json({
             message: "User updated successfully",
-            user: updatedUser
+            user: safeUser
         });
 
     } catch (error) {
@@ -229,7 +246,7 @@ const addCourseToUser = async (req, res) => {
         }
 
         // Check if course is already added to user
-        const alreadyAdded = user.courses.some(course => course.toString() === courseId);
+        const alreadyAdded = user.courses.some(c => c.toString() === courseId);
 
         if (alreadyAdded) {
             return res.status(409).json({
@@ -241,8 +258,10 @@ const addCourseToUser = async (req, res) => {
         user.courses.push(courseId);
         await user.save();
 
-        // Return updated user with populated courses
-        const updatedUser = await User.findById(id).populate("courses");
+        // Return updated user with populated courses (without password)
+        const updatedUser = await User.findById(id)
+            .select("-password")
+            .populate("courses");
 
         return res.status(200).json({
             message: "Course added to user successfully",
