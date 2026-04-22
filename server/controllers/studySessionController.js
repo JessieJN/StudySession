@@ -141,7 +141,7 @@ const getStudySessionById = async (req, res) => {
 };
 
 
-// ----- Get study sessions by user ----
+// ----- Get study sessions by user -----
 //To get and show the users sessions (ex. On My page)
 const getStudySessionsByUser = async (req, res) => {
     try {
@@ -172,4 +172,32 @@ const getStudySessionsByUser = async (req, res) => {
 };
 
 
-module.exports = { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser };
+// ----- Delete study session -----
+const deleteStudySession = async (req, res) => {
+    try {
+        // Get id from URL
+        const { id } = req.params;
+
+        // Find session by id and delete it
+        const deletedSession = await StudySession.findByIdAndDelete(id);
+
+        if (!deletedSession) {
+            return res.status(404).json({
+                message: "Study session not found"
+            });
+        }
+
+        return res.status(200).json({
+            message: "Study session deleted successfully"
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error deleting study session",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser, deleteStudySession };

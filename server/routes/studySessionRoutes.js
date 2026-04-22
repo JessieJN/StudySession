@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 // Gets the functions from the controller file
-const { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser } = require("../controllers/studySessionController");
+const { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser, deleteStudySession } = require("../controllers/studySessionController");
 
 // Tells if someone sends POST to / -> run createStudySession
 router.post("/", createStudySession);
@@ -17,5 +17,8 @@ router.get("/", getStudySessions);
 router.get("/:id", getStudySessionById);
 //By user
 router.get("/user/:userId", getStudySessionsByUser);
+
+//Tells if someone sends DELETE to / -> run deleteStudySession
+router.delete("/:id", deleteStudySession);
 
 module.exports = router;
