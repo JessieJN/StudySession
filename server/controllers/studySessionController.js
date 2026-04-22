@@ -6,7 +6,8 @@ const StudySession = require("../models/StudySession");
 const User = require("../models/User");
 const Course = require("../models/Course");
 
-// ----- Create study session ----
+
+// ----- Create study session -----
 const createStudySession = async (req, res) => {
     try {
         // Get data from request body
@@ -90,4 +91,25 @@ const createStudySession = async (req, res) => {
     }
 };
 
-module.exports = { createStudySession };
+
+// ----- Get study sessions -----
+const getStudySessions = async (req, res) => {
+    try {
+        // Find all sessions in db + populate user and course
+        //populate() -> To get the entire object not just the ID (like JOIN)
+        const sessions = await StudySession.find()
+            .populate("user", "-password")
+            .populate("course");
+
+        return res.status(200).json(sessions);
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching study sessions",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = { createStudySession, getStudySessions };
