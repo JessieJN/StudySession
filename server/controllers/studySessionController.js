@@ -113,7 +113,7 @@ const getStudySessions = async (req, res) => {
 
 
 
-// ----- Get study session by id ----
+// ----- Get study session by id -----
 const getStudySessionById = async (req, res) => {
     try {
         // Get id from URL
@@ -140,4 +140,36 @@ const getStudySessionById = async (req, res) => {
     }
 };
 
-module.exports = { createStudySession, getStudySessions, getStudySessionById };
+
+// ----- Get study sessions by user ----
+//To get and show the users sessions (ex. On My page)
+const getStudySessionsByUser = async (req, res) => {
+    try {
+        // Get userId from URL
+        const { userId } = req.params;
+
+        // Find all sessions for this user + populate user and course
+        const sessions = await StudySession.find({ user: userId })
+            .populate("user", "-password")
+            .populate("course");
+
+        // If no sessions were found
+        if (sessions.length === 0) {
+            return res.status(200).json({
+                message: "No study sessions found for this user",
+                sessions: []
+            });
+        }
+
+        return res.status(200).json(sessions);
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching study sessions for user",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser };

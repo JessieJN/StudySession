@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 // Gets the functions from the controller file
-const { createStudySession, getStudySessions, getStudySessionById } = require("../controllers/studySessionController");
+const { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser } = require("../controllers/studySessionController");
 
 // Tells if someone sends POST to / -> run createStudySession
 router.post("/", createStudySession);
@@ -15,5 +15,7 @@ router.post("/", createStudySession);
 router.get("/", getStudySessions);
 //By ID
 router.get("/:id", getStudySessionById);
+//By user
+router.get("/user/:userId", getStudySessionsByUser);
 
 module.exports = router;
