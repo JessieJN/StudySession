@@ -112,4 +112,32 @@ const getStudySessions = async (req, res) => {
 };
 
 
-module.exports = { createStudySession, getStudySessions };
+
+// ----- Get study session by id ----
+const getStudySessionById = async (req, res) => {
+    try {
+        // Get id from URL
+        const { id } = req.params;
+
+        // Find session by id + populate user and course
+        const session = await StudySession.findById(id)
+            .populate("user", "-password")
+            .populate("course");
+
+        if (!session) {
+            return res.status(404).json({
+                message: "Study session not found"
+            });
+        }
+
+        return res.status(200).json(session);
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching study session",
+            error: error.message
+        });
+    }
+};
+
+module.exports = { createStudySession, getStudySessions, getStudySessionById };
