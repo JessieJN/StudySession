@@ -1,7 +1,6 @@
-// logic + imports StudySession, User and Course + creates session in db
+// logic + imports StudySession, User and Course + creates sessions in db
 
-
-//import to check if they exist before creating a session
+// Imports to check if user and course exist before creating a session
 const StudySession = require("../models/StudySession");
 const User = require("../models/User");
 const Course = require("../models/Course");
@@ -95,8 +94,8 @@ const createStudySession = async (req, res) => {
 // ----- Get study sessions -----
 const getStudySessions = async (req, res) => {
     try {
-        // Find all sessions in db + populate user and course
-        //populate() -> To get the entire object not just the ID (like JOIN)
+        // Find all sessions in db and populate user and course
+        // populate() gets the full object instead of only the id
         const sessions = await StudySession.find()
             .populate("user", "-password")
             .populate("course");
@@ -112,14 +111,13 @@ const getStudySessions = async (req, res) => {
 };
 
 
-
 // ----- Get study session by id -----
 const getStudySessionById = async (req, res) => {
     try {
         // Get id from URL
         const { id } = req.params;
 
-        // Find session by id + populate user and course
+        // Find session by id and populate user and course
         const session = await StudySession.findById(id)
             .populate("user", "-password")
             .populate("course");
@@ -142,24 +140,15 @@ const getStudySessionById = async (req, res) => {
 
 
 // ----- Get study sessions by user -----
-//To get and show the users sessions (ex. On My page)
 const getStudySessionsByUser = async (req, res) => {
     try {
         // Get userId from URL
         const { userId } = req.params;
 
-        // Find all sessions for this user + populate user and course
+        // Find all sessions for this user and populate user and course
         const sessions = await StudySession.find({ user: userId })
             .populate("user", "-password")
             .populate("course");
-
-        // If no sessions were found
-        if (sessions.length === 0) {
-            return res.status(200).json({
-                message: "No study sessions found for this user",
-                sessions: []
-            });
-        }
 
         return res.status(200).json(sessions);
 
@@ -302,4 +291,4 @@ const updateStudySession = async (req, res) => {
 };
 
 
-module.exports = { createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser, deleteStudySession, updateStudySession };
+module.exports = {createStudySession, getStudySessions, getStudySessionById, getStudySessionsByUser, deleteStudySession, updateStudySession};

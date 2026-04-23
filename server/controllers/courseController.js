@@ -1,36 +1,36 @@
-//logic + imports Course + creates course in db
+// logic + imports Course + creates course in db
 const Course = require("../models/Course");
 
 
 // ----- Create a new course -----
 const createCourse = async (req, res) => {
     try {
-        //Get data from request body
-        const { name, code, program, semester, credits} = req.body;
+        // Get data from request body
+        const { name, code, program, semester, credits } = req.body;
 
-        //Check required fields
+        // Check required fields
         if (!name || !code || credits === undefined) {
-            return res.status(400).json({ message: "Name, code and credits are required"});
+            return res.status(400).json({ message: "Name, code and credits are required" });
         }
 
-        //Check that credits are a number
+        // Check that credits are a number
         if (isNaN(credits)) {
-            return res.status(400).json({message: "Credits must be a number"});
+            return res.status(400).json({ message: "Credits must be a number" });
         }
 
-        //Check that credits are not negative
+        // Check that credits are not negative
         if (credits < 0) {
-            return res.status(400).json({message: "Credits cannot be negative"});
+            return res.status(400).json({ message: "Credits cannot be negative" });
         }
 
-        //Check duplicate course code
+        // Check duplicate course code
         const existingCourse = await Course.findOne({ code });
 
         if (existingCourse) {
-            return res.status(409).json({ message: "A course with this code already exists"});
+            return res.status(409).json({ message: "A course with this code already exists" });
         }
 
-        //Create new course in db
+        // Create new course in db
         const newCourse = await Course.create({
             name,
             code,
@@ -39,13 +39,13 @@ const createCourse = async (req, res) => {
             credits
         });
 
-        //Send response message
-        res.status(201).json({
+        // Send response message
+        return res.status(201).json({
             message: "Course created successfully",
             course: newCourse
         });
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Error creating course",
             error: error.message
         });
@@ -53,53 +53,68 @@ const createCourse = async (req, res) => {
 };
 
 
-// ----- Get Courses ----
+// ----- Get courses -----
 const getCourses = async (req, res) => {
     try {
+        // Find all courses in db
         const courses = await Course.find();
 
-        if (courses.length === 0){
-            return res.json({message: "No courses found"});
-        }
-        
-        res.status(200).json(courses);
+        // Send all courses
+        return res.status(200).json(courses);
 
-    } catch (error){
-        res.status(500).json({ message: "Error fetching courses", error: error.message});
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching courses",
+            error: error.message
+        });
     }
 };
 
 
 // ----- Get course by ID -----
-const getCourseById = async (req,res) => {
+const getCourseById = async (req, res) => {
     try {
-        const {id} = req.params;
+        // Get id from URL
+        const { id } = req.params;
+
+        // Find course by id
         const course = await Course.findById(id);
 
-        if (!course){
-            return res.status(404).json({message: "Course not found"})
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
         }
-        return res.status(200).json({course})
 
-    } catch (error){
-        return res.status(500).json({message: "Error fetching course", error: error.message});
+        return res.status(200).json({ course });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching course",
+            error: error.message
+        });
     }
 };
 
 
-// ----- Delete course ----
-const deleteCourse = async (req,res) => {
+// ----- Delete course -----
+const deleteCourse = async (req, res) => {
     try {
-        const {id} = req.params;
+        // Get id from URL
+        const { id } = req.params;
 
+        // Delete course by id
         const deletedCourse = await Course.findByIdAndDelete(id);
 
         if (!deletedCourse) {
-            return res.status(404).json({ message: "Course not found"});
+            return res.status(404).json({ message: "Course not found" });
         }
-        return res.status(200).json({message: " Course deleted successfully"});
+
+        return res.status(200).json({ message: "Course deleted successfully" });
+
     } catch (error) {
-        return res.status(500).json({message: "Error deleting course", error: error.message});
+        return res.status(500).json({
+            message: "Error deleting course",
+            error: error.message
+        });
     }
 };
 
@@ -107,41 +122,53 @@ const deleteCourse = async (req,res) => {
 // ----- Update course -----
 const updateCourse = async (req, res) => {
     try {
-        const {id} = req.params;
+        // Get id from URL and data from request body
+        const { id } = req.params;
         const { name, code, program, semester, credits } = req.body;
 
-        //Check required fields
+        // Check required fields
         if (!name || !code || credits === undefined) {
-            return res.status(400).json({message: "Name, code and credits are required"})
+            return res.status(400).json({ message: "Name, code and credits are required" });
         }
 
-        //Check that credits are a number
-        if (typeof credits !== "number" || isNaN(credits)) {
-            return res.status(400).json({message: "Credits must be a number"})
+        // Check that credits are a number
+        if (isNaN(credits)) {
+            return res.status(400).json({ message: "Credits must be a number" });
         }
 
-        //Check that credits is not negative
+        // Check that credits is not negative
         if (credits < 0) {
-            return res.status(400).json({message: "Credits cannot be negative"})
+            return res.status(400).json({ message: "Credits cannot be negative" });
         }
 
-        //Check for duplicate course code
+        // Check for duplicate course code
         const existingCourse = await Course.findOne({ code });
 
         if (existingCourse && existingCourse._id.toString() !== id) {
-            return res.status(409).json({message: "A course with this course code already exists"})
+            return res.status(409).json({ message: "A course with this code already exists" });
         }
 
-        const updatedCourse = await Course.findByIdAndUpdate(id, {name, code, program, semester, credits}, {new: true});
+        // Update course in db
+        const updatedCourse = await Course.findByIdAndUpdate(
+            id,
+            { name, code, program, semester, credits },
+            { new: true }
+        );
 
-        if (!updateCourse) {
-            return res.status(404).json({message: "Course not found"});
+        if (!updatedCourse) {
+            return res.status(404).json({ message: "Course not found" });
         }
 
-        return res.status(200).json({message: "Course updated successfully", course: updatedCourse});
+        return res.status(200).json({
+            message: "Course updated successfully",
+            course: updatedCourse
+        });
 
     } catch (error) {
-        return res.status(500).json({message: "Error updating course", error: error.message});
+        return res.status(500).json({
+            message: "Error updating course",
+            error: error.message
+        });
     }
 };
 

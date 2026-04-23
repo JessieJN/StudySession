@@ -1,6 +1,6 @@
 // logic + imports User + creates/fetches users in db
 
-
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const Course = require("../models/Course");
 const bcrypt = require("bcrypt");
@@ -12,13 +12,22 @@ const createUser = async (req, res) => {
         // Get data from request body
         let { name, email, password, courses } = req.body;
 
-        // Normalize email
-        email = email.trim().toLowerCase();
-
         // Check required fields
         if (!name || !email || !password) {
             return res.status(400).json({
                 message: "Name, email and password are required"
+            });
+        }
+
+        // Normalize email
+        email = email.trim().toLowerCase();
+
+
+
+        // Check email format
+        if (!email.includes("@")) {
+            return res.status(400).json({
+                message: "Invalid email format"
             });
         }
 
@@ -31,13 +40,6 @@ const createUser = async (req, res) => {
             });
         }
 
-        // Check email format
-        if (!email.includes("@")) {
-            return res.status(400).json({
-                message: "Invalid email format"
-            });
-        }
-
         // Check password length
         if (password.length < 6) {
             return res.status(400).json({
@@ -47,7 +49,7 @@ const createUser = async (req, res) => {
 
         // Hash password before saving
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         // Create new user in db
         const newUser = await User.create({
             name,
@@ -100,6 +102,13 @@ const getUserById = async (req, res) => {
         // Get id from URL
         const { id } = req.params;
 
+        // Check if id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid user id"
+            });
+        }
+
         // Find user by id
         const user = await User.findById(id).select("-password").populate("courses");
 
@@ -124,8 +133,17 @@ const getUserById = async (req, res) => {
 // ----- Delete user -----
 const deleteUser = async (req, res) => {
     try {
+        // Get id from URL
         const { id } = req.params;
 
+        // Check if id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid user id"
+            });
+        }
+
+        // Delete user by id
         const deletedUser = await User.findByIdAndDelete(id);
 
         if (!deletedUser) {
@@ -150,8 +168,16 @@ const deleteUser = async (req, res) => {
 // ----- Update user -----
 const updateUser = async (req, res) => {
     try {
+        // Get id from URL and data from request body
         const { id } = req.params;
         let { name, email, password, courses } = req.body;
+
+        // Check if id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid user id"
+            });
+        }
 
         // Check required fields
         if (!name || !email || !password) {
@@ -160,13 +186,35 @@ const updateUser = async (req, res) => {
             });
         }
 
-        // Normalize email
+        // Check correct types
+        if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
+            return res.status(400).json({
+                message: "Name, email and password must be strings"
+            });
+        }
+
+        // Normalize name and email
+        name = name.trim();
         email = email.trim().toLowerCase();
+
+        // Check if fields are empty after trim
+        if (!name || !email || !password.trim()) {
+            return res.status(400).json({
+                message: "Name, email and password cannot be empty"
+            });
+        }
 
         // Check email format
         if (!email.includes("@")) {
             return res.status(400).json({
                 message: "Invalid email format"
+            });
+        }
+
+        // Check password length
+        if (password.length < 6) {
+            return res.status(400).json({
+                message: "Password must be at least 6 characters"
             });
         }
 
@@ -191,7 +239,8 @@ const updateUser = async (req, res) => {
         // Hash password before updating
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const updatedUser = await User.findByIdAndUpdate(
+        // Update user in db
+        await User.findByIdAndUpdate(
             id,
             {
                 name,
@@ -228,10 +277,24 @@ const addCourseToUser = async (req, res) => {
         const { id } = req.params;
         const { courseId } = req.body;
 
+        // Check if id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid user id"
+            });
+        }
+
         // Check if courseId was sent
         if (!courseId) {
             return res.status(400).json({
                 message: "courseId is required"
+            });
+        }
+
+        // Check if courseId is valid
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({
+                message: "Invalid course id"
             });
         }
 
@@ -266,7 +329,7 @@ const addCourseToUser = async (req, res) => {
         user.courses.push(courseId);
         await user.save();
 
-        // Return updated user with populated courses 
+        // Return updated user with populated courses
         const updatedUser = await User.findById(id)
             .select("-password")
             .populate("courses");
@@ -292,10 +355,24 @@ const removeCourseFromUser = async (req, res) => {
         const { id } = req.params;
         const { courseId } = req.body;
 
+        // Check if id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid user id"
+            });
+        }
+
         // Check if courseId was sent
         if (!courseId) {
             return res.status(400).json({
                 message: "courseId is required"
+            });
+        }
+
+        // Check if courseId is valid
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({
+                message: "Invalid course id"
             });
         }
 
@@ -362,8 +439,22 @@ const loginUser = async (req, res) => {
             });
         }
 
+        // Check correct types
+        if (typeof email !== "string" || typeof password !== "string") {
+            return res.status(400).json({
+                message: "Email and password must be strings"
+            });
+        }
+
         // Normalize email
         const normalizedEmail = email.trim().toLowerCase();
+
+        // Check if fields are empty after trim
+        if (!normalizedEmail || !password.trim()) {
+            return res.status(400).json({
+                message: "Email and password cannot be empty"
+            });
+        }
 
         // Find user by email
         const user = await User.findOne({ email: normalizedEmail });
