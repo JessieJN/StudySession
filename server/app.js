@@ -3,7 +3,9 @@ const app = express();
 const courseRoutes = require("./routes/courseRoutes");
 const userRoutes = require("./routes/userRoutes");
 const studySessionRoutes = require("./routes/studySessionRoutes");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
