@@ -6,10 +6,12 @@ const express = require("express");
 const router = express.Router();
 
 // Gets the functions from the controller file
-const { createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser } = require("../controllers/userController");
+const { createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser, loginUser } = require("../controllers/userController");
 
 // Tells if someone sends POST to / -> run createUser
 router.post("/", createUser);
+//Login 
+router.post("/login", loginUser);
 
 // Tells if someone sends GET to / -> run getUsers
 router.get("/", getUsers);

@@ -349,4 +349,57 @@ const removeCourseFromUser = async (req, res) => {
 };
 
 
-module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser};
+// ----- Login user -----
+const loginUser = async (req, res) => {
+    try {
+        // Get data from request body
+        const { email, password } = req.body;
+
+        // Check required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Email and password are required"
+            });
+        }
+
+        // Normalize email
+        const normalizedEmail = email.trim().toLowerCase();
+
+        // Find user by email
+        const user = await User.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            });
+        }
+
+        // Compare password with hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            });
+        }
+
+        // Return user without password
+        const safeUser = await User.findById(user._id)
+            .select("-password")
+            .populate("courses");
+
+        return res.status(200).json({
+            message: "Login successful",
+            user: safeUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error logging in",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = {createUser, getUsers, getUserById, deleteUser, updateUser, addCourseToUser, removeCourseFromUser, loginUser};

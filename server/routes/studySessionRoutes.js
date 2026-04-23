@@ -13,10 +13,11 @@ router.post("/", createStudySession);
 
 // Tells if someone sends GET to / -> run getStudySessions
 router.get("/", getStudySessions);
-//By ID
-router.get("/:id", getStudySessionById);
 //By user
 router.get("/user/:userId", getStudySessionsByUser);
+//By ID
+router.get("/:id", getStudySessionById);
+
 
 //Tells if someone sends DELETE to / -> run deleteStudySession
 router.delete("/:id", deleteStudySession);
