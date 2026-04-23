@@ -1,7 +1,9 @@
 // logic + imports User + creates/fetches users in db
 
+
 const User = require("../models/User");
 const Course = require("../models/Course");
+const bcrypt = require("bcrypt");
 
 
 // ----- Create user -----
@@ -43,11 +45,14 @@ const createUser = async (req, res) => {
             });
         }
 
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         // Create new user in db
         const newUser = await User.create({
             name,
             email,
-            password,
+            password: hashedPassword,
             courses: courses || []
         });
 
@@ -183,12 +188,15 @@ const updateUser = async (req, res) => {
             });
         }
 
+        // Hash password before updating
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const updatedUser = await User.findByIdAndUpdate(
             id,
             {
                 name,
                 email,
-                password,
+                password: hashedPassword,
                 courses: courses || []
             },
             { new: true }
