@@ -6,13 +6,15 @@ const express = require("express");
 const router = express.Router();
 
 //Gets the functions from the controller file
-const { createCourse, getCourses, getCourseById, deleteCourse, updateCourse } = require("../controllers/courseController");
+const { createCourse, getCourses, getCourseById, deleteCourse, updateCourse, searchCourses } = require("../controllers/courseController");
 
 //Tells if someone send POST to / -> run createCourse
 router.post("/", createCourse);
 
 //Tells if someone send GET to / -> run getCourses
 router.get("/", getCourses);
+//GET by search
+router.get("/search", searchCourses);
 
 //Tells if someone send GET by id to / -> run getCoursesById
 router.get("/:id", getCourseById);

@@ -173,4 +173,49 @@ const updateCourse = async (req, res) => {
 };
 
 
-module.exports = { createCourse, getCourses, getCourseById, deleteCourse, updateCourse };
+// ===== CUSTOM ENDPOINT =====
+// ----- Search and filter courses -----
+const searchCourses = async (req, res) => {
+    try {
+        // Get search and program from query
+        const { search, program } = req.query;
+
+        // Check that at least one query parameter was sent
+        if (!search && !program) {
+            return res.status(400).json({
+                message: "Please provide search or program"
+            });
+        }
+
+        // Create filter object
+        const filter = {};
+
+        // Add program filter if program was sent
+        if (program) {
+            filter.program = program;
+        }
+
+        // Add search filter for course name or course code if search was sent
+        if (search) {
+            filter.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { code: { $regex: search, $options: "i" } }
+            ];
+        }
+
+        // Find courses that match the filter
+        const courses = await Course.find(filter);
+
+        // Send matching courses
+        return res.status(200).json(courses);
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error searching courses",
+            error: error.message
+        });
+    }
+};
+
+
+module.exports = { createCourse, getCourses, getCourseById, deleteCourse, updateCourse, searchCourses };
