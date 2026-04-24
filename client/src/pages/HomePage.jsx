@@ -7,71 +7,91 @@ function HomePage({ currentUser, setCurrentUser }) {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [program, setProgram] = useState("");
+
+  // Saves the latest search/filter used by the user
+  const [activeSearch, setActiveSearch] = useState("");
+  const [activeProgram, setActiveProgram] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    // Fetch courses when the page loads
+    fetchCourses(true, activeSearch, activeProgram);
 
-  const fetchCourses = async () => {
-    try {
+    // Auto-refresh courses every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchCourses(false, activeSearch, activeProgram);
+    }, 10000);
+
+    // Clean up the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [activeSearch, activeProgram]);
+
+  const fetchCourses = async (
+    showLoading = true,
+    searchValue = activeSearch,
+    programValue = activeProgram
+  ) => {
+    if (showLoading) {
       setLoading(true);
+    }
+
+    try {
       setError("");
 
-      const response = await fetch("http://localhost:3000/courses");
+      const params = new URLSearchParams();
+
+      if (searchValue.trim()) {
+        params.append("search", searchValue.trim());
+      }
+
+      if (programValue) {
+        params.append("program", programValue);
+      }
+
+      // Use the search endpoint only when search/filter is active
+      const url = params.toString()
+        ? `http://localhost:3000/courses/search?${params.toString()}`
+        : "http://localhost:3000/courses";
+
+      const response = await fetch(url);
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to fetch courses");
       }
 
-      setCourses(data);
+      // Only update state if the data has actually changed
+      setCourses((prevCourses) => {
+        if (JSON.stringify(prevCourses) === JSON.stringify(data)) {
+          return prevCourses;
+        }
+
+        return data;
+      });
     } catch (error) {
-      setError(error.message);
+      setError(error.message || "Could not fetch courses");
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
   const handleSearch = async () => {
-    try {
-      setLoading(true);
-      setError("");
+    const newSearch = search.trim();
+    const newProgram = program;
 
-      if (!search.trim() && !program) {
-        await fetchCourses();
-        return;
-      }
+    // Save the current search/filter so auto-refresh keeps using it
+    setActiveSearch(newSearch);
+    setActiveProgram(newProgram);
 
-      const params = new URLSearchParams();
-
-      if (search.trim()) {
-        params.append("search", search.trim());
-      }
-
-      if (program) {
-        params.append("program", program);
-      }
-
-      const response = await fetch(
-        `http://localhost:3000/courses/search?${params.toString()}`
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to search courses");
-      }
-
-      setCourses(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+    await fetchCourses(true, newSearch, newProgram);
   };
 
   const handleEdit = (course) => {
@@ -103,7 +123,7 @@ function HomePage({ currentUser, setCurrentUser }) {
         setSelectedCourse(null);
       }
 
-      await fetchCourses();
+      await fetchCourses(true, activeSearch, activeProgram);
     } catch (error) {
       setError(error.message);
     }
@@ -161,7 +181,7 @@ function HomePage({ currentUser, setCurrentUser }) {
       />
 
       <CourseForm
-        onCourseSaved={fetchCourses}
+        onCourseSaved={() => fetchCourses(true, activeSearch, activeProgram)}
         selectedCourse={selectedCourse}
         clearSelectedCourse={clearSelectedCourse}
       />
