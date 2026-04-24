@@ -52,6 +52,7 @@ function Header({ currentPage, setCurrentPage, setCurrentUser }) {
                 type="button"
                 style={styles.dropdownItem}
                 onClick={() => {
+                  localStorage.removeItem("user")
                   setCurrentUser(null);
                   setCurrentPage("home");
                   setShowMenu(false);
