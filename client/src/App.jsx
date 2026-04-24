@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import CourseList from "./components/CourseList";
+import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import LoginPage from "./pages/LoginPage";
 
@@ -43,7 +43,7 @@ function App() {
       />
 
       {currentPage === "home" && (
-        <CourseList
+        <HomePage
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
         />
