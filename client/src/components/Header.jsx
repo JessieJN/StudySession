@@ -1,6 +1,9 @@
 import Logo from "./Logo";
+import { useState } from "react";
 
-function Header({ currentPage, setCurrentPage }) {
+function Header({ currentPage, setCurrentPage, setCurrentUser }) {
+  const [showMenu, setShowMenu] = useState(false);
+
   return (
     <header style={styles.header}>
       <Logo />
@@ -26,7 +29,39 @@ function Header({ currentPage, setCurrentPage }) {
           My Page
         </button>
 
-        <div style={styles.profileIcon}>◦</div>
+        {/* Profile / Settings */}
+        <div style={{ position: "relative" }}>
+          <div
+            style={styles.profileIcon}
+            onClick={() => setShowMenu(!showMenu)}
+          >
+            ☰
+          </div>
+
+          {showMenu && (
+            <div style={styles.dropdown}>
+              <button style={styles.dropdownItem}>
+                Change name
+              </button>
+
+              <button style={styles.dropdownItem}>
+                Change password
+              </button>
+
+              <button
+                type="button"
+                style={styles.dropdownItem}
+                onClick={() => {
+                  setCurrentUser(null);
+                  setCurrentPage("home");
+                  setShowMenu(false);
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
     </header>
   );
@@ -72,7 +107,35 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     color: "#6b5b52",
-    fontSize: "22px"
+    fontSize: "18px",
+    cursor: "pointer"
+  },
+
+  dropdown: {
+    position: "absolute",
+    top: "45px",
+    right: "0",
+    minWidth: "160px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e3d5ca",
+    borderRadius: "12px",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+    padding: "8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    zIndex: 10
+  },
+
+  dropdownItem: {
+    padding: "10px 14px",
+    border: "none",
+    background: "transparent",
+    textAlign: "left",
+    cursor: "pointer",
+    borderRadius: "8px",
+    fontSize: "14px",
+    color: "#3a322e"
   }
 };
 

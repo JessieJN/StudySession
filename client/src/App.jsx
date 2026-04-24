@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div>
-      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} setCurrentUser={setCurrentUser} />
 
       {currentPage === "home" && (
       <CourseList currentUser={currentUser} setCurrentUser={setCurrentUser} />
