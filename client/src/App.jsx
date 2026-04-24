@@ -22,8 +22,10 @@ function App() {
     <div>
       <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
 
-      {currentPage === "home" && <CourseList />}
-      {currentPage === "myPage" && <MyPage currentUser={currentUser} />}
+      {currentPage === "home" && (
+      <CourseList currentUser={currentUser} setCurrentUser={setCurrentUser} />
+    )}
+      {currentPage === "myPage" && <MyPage currentUser={currentUser} setCurrentUser={setCurrentUser} />}
     </div>
   );
 }

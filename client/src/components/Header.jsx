@@ -1,16 +1,28 @@
 import Logo from "./Logo";
 
-function Header() {
+function Header({ currentPage, setCurrentPage }) {
   return (
     <header style={styles.header}>
       <Logo />
 
       <nav style={styles.nav}>
-        <button style={{ ...styles.navButton, ...styles.activeButton }}>
+        <button
+          onClick={() => setCurrentPage("home")}
+          style={{
+            ...styles.navButton,
+            ...(currentPage === "home" ? styles.activeButton : {})
+          }}
+        >
           Home
         </button>
 
-        <button style={styles.navButton}>
+        <button
+          onClick={() => setCurrentPage("myPage")}
+          style={{
+            ...styles.navButton,
+            ...(currentPage === "myPage" ? styles.activeButton : {})
+          }}
+        >
           My Page
         </button>
 
