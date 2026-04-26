@@ -2,7 +2,7 @@
 
 ## Overview
 
-“StudySession is a fullstack web application that helps students track their study sessions and discover when and how they study most effectively.
+StudySession is a fullstack web application that helps students track their study sessions and discover when and how they study most effectively.
 
 The app allows users to:
 

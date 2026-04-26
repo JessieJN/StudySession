@@ -1,4 +1,5 @@
-// decides which URL + connects URL to the right function
+// Study session routes
+// Maps HTTP requests to controller functions
 
 const express = require("express");
 

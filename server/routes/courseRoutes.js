@@ -1,4 +1,5 @@
-//desides which URL + connects URL to the right function
+// Course routes
+// Maps HTTP requests to controller functions
 
 const express = require("express");
 

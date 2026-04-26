@@ -1,5 +1,7 @@
 import { Pencil, Trash2, Plus } from "lucide-react";
 
+// CourseList component
+// Displays courses in a table and handles edit, delete, and add-to-profile actions
 function CourseList({
   courses,
   loading,

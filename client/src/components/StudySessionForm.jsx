@@ -10,6 +10,7 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Create a new study session
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,6 +42,7 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
 
       setSuccess("Study session added successfully");
 
+      // Clear form fields after successful submit
       setCourse("");
       setDate("");
       setDurationMinutes("");
@@ -48,8 +50,8 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
       setStudyMethod("");
       setNotes("");
 
+      // Refresh the session list in MyPage
       onSessionAdded();
-
     } catch (error) {
       setError(error.message);
     }
@@ -60,7 +62,11 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
       <h3 style={styles.title}>Add study session</h3>
 
       <form onSubmit={handleSubmit} style={styles.form}>
-        <select value={course} onChange={(e) => setCourse(e.target.value)} style={styles.input}>
+        <select
+          value={course}
+          onChange={(e) => setCourse(e.target.value)}
+          style={styles.input}
+        >
           <option value="">Select course</option>
           {courses.map((course) => (
             <option key={course._id} value={course._id}>
@@ -69,7 +75,12 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
           ))}
         </select>
 
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={styles.input} />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          style={styles.input}
+        />
 
         <input
           type="number"
@@ -80,21 +91,24 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
           style={styles.input}
         />
 
-
         <select
-        value={focusLevel}
-        onChange={(e) => setFocusLevel(e.target.value)}
-        style={styles.input}
+          value={focusLevel}
+          onChange={(e) => setFocusLevel(e.target.value)}
+          style={styles.input}
         >
-            <option value="">Focus level</option>
-            <option value="1">1 - Very low</option>
-            <option value="2">2 - Low</option>
-            <option value="3">3 - Medium</option>
-            <option value="4">4 - High</option>
-            <option value="5">5 - Very high</option>
+          <option value="">Focus level</option>
+          <option value="1">1 - Very low</option>
+          <option value="2">2 - Low</option>
+          <option value="3">3 - Medium</option>
+          <option value="4">4 - High</option>
+          <option value="5">5 - Very high</option>
         </select>
 
-        <select value={studyMethod} onChange={(e) => setStudyMethod(e.target.value)} style={styles.input}>
+        <select
+          value={studyMethod}
+          onChange={(e) => setStudyMethod(e.target.value)}
+          style={styles.input}
+        >
           <option value="">Study method</option>
           <option value="reading">Reading</option>
           <option value="coding">Coding</option>
@@ -112,7 +126,9 @@ function StudySessionForm({ currentUser, courses, onSessionAdded }) {
           style={styles.input}
         />
 
-        <button type="submit" style={styles.button}>Save session</button>
+        <button type="submit" style={styles.button}>
+          Save session
+        </button>
       </form>
 
       {error && <p style={styles.error}>{error}</p>}

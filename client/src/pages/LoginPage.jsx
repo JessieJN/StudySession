@@ -10,15 +10,13 @@ function LoginPage({ setCurrentUser, setCurrentPage }) {
   const [registerPassword, setRegisterPassword] = useState("");
 
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
-  // Login user
+  // Log in an existing user
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       setError("");
-      setSuccess("");
 
       const response = await fetch("http://localhost:3000/users/login", {
         method: "POST",
@@ -45,13 +43,12 @@ function LoginPage({ setCurrentUser, setCurrentPage }) {
     }
   };
 
-  // Register user
+  // Register a new user
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
       setError("");
-      setSuccess("");
 
       const response = await fetch("http://localhost:3000/users", {
         method: "POST",
@@ -156,10 +153,9 @@ function LoginPage({ setCurrentUser, setCurrentPage }) {
         </div>
       </div>
 
-      {(error || success) && (
+      {error && (
         <div style={styles.messageBox}>
-          {error && <p style={styles.error}>{error}</p>}
-          {success && <p style={styles.success}>{success}</p>}
+          <p style={styles.error}>{error}</p>
         </div>
       )}
     </section>
@@ -285,11 +281,6 @@ const styles = {
   error: {
     margin: 0,
     color: "#c2410c"
-  },
-
-  success: {
-    margin: 0,
-    color: "#15803d"
   }
 };
 

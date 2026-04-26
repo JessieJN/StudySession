@@ -4,6 +4,11 @@ import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import LoginPage from "./pages/LoginPage";
 
+// App component (root component)
+// Manages global state (current user and current page)
+// Handles authentication using localStorage
+// Controls which page is displayed (Login, Home, MyPage)
+
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPage, setCurrentPage] = useState("home");

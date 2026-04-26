@@ -22,8 +22,6 @@ const createUser = async (req, res) => {
         // Normalize email
         email = email.trim().toLowerCase();
 
-
-
         // Check email format
         if (!email.includes("@")) {
             return res.status(400).json({

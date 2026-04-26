@@ -1,3 +1,6 @@
+// SearchBar component
+// Handles search input and program filter for courses
+
 function SearchBar({ search, setSearch, program, setProgram, handleSearch }) {
   return (
     <div style={styles.wrapper}>

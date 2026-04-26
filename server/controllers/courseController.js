@@ -175,6 +175,8 @@ const updateCourse = async (req, res) => {
 
 // ===== CUSTOM ENDPOINT =====
 // ----- Search and filter courses -----
+
+
 const searchCourses = async (req, res) => {
     try {
         // Get search and program from query
