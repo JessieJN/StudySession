@@ -1,8 +1,6 @@
 import Logo from "./Logo";
 import { useState } from "react";
 
-// Header component
-// Handles navigation between pages and user menu (dropdown)
 function Header({ currentPage, setCurrentPage, setCurrentUser }) {
   const [showMenu, setShowMenu] = useState(false);
 
@@ -11,7 +9,6 @@ function Header({ currentPage, setCurrentPage, setCurrentUser }) {
       <Logo />
 
       <nav style={styles.nav}>
-        {/* Navigation buttons */}
         <button
           onClick={() => setCurrentPage("home")}
           style={{
@@ -32,7 +29,7 @@ function Header({ currentPage, setCurrentPage, setCurrentUser }) {
           My Page
         </button>
 
-        {/* Profile / Settings dropdown */}
+        {/* Profile / Settings */}
         <div style={{ position: "relative" }}>
           <div
             style={styles.profileIcon}
@@ -55,8 +52,7 @@ function Header({ currentPage, setCurrentPage, setCurrentUser }) {
                 type="button"
                 style={styles.dropdownItem}
                 onClick={() => {
-                  // Clear stored user and reset app state
-                  localStorage.removeItem("user");
+                  localStorage.removeItem("user")
                   setCurrentUser(null);
                   setCurrentPage("home");
                   setShowMenu(false);
@@ -71,3 +67,77 @@ function Header({ currentPage, setCurrentPage, setCurrentUser }) {
     </header>
   );
 }
+
+const styles = {
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "18px 32px",
+    backgroundColor: "#f5ebe0",
+    borderBottom: "1px solid #e3d5ca"
+  },
+
+  nav: {
+    display: "flex",
+    alignItems: "center",
+    gap: "16px"
+  },
+
+  navButton: {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "15px",
+    color: "#6b5b52",
+    padding: "6px 10px"
+  },
+
+  activeButton: {
+    borderBottom: "2px solid #d5bdaf",
+    fontWeight: "600",
+    color: "#3a322e"
+  },
+
+  profileIcon: {
+    width: "34px",
+    height: "34px",
+    borderRadius: "50%",
+    border: "1px solid #d5bdaf",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#6b5b52",
+    fontSize: "18px",
+    cursor: "pointer"
+  },
+
+  dropdown: {
+    position: "absolute",
+    top: "45px",
+    right: "0",
+    minWidth: "160px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e3d5ca",
+    borderRadius: "12px",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+    padding: "8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    zIndex: 10
+  },
+
+  dropdownItem: {
+    padding: "10px 14px",
+    border: "none",
+    background: "transparent",
+    textAlign: "left",
+    cursor: "pointer",
+    borderRadius: "8px",
+    fontSize: "14px",
+    color: "#3a322e"
+  }
+};
+
+export default Header;

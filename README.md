@@ -10,7 +10,7 @@ The app allows users to:
 * Search and filter courses
 * Add courses to their personal profile
 * Track study-related data
-* Create sessions with course, date, focuslevel, notes
+* Create sessions with course, date, focus level, notes
 
 ---
 
@@ -19,7 +19,7 @@ The app allows users to:
 * Frontend: React (Vite)
 * Backend: Node.js + Express
 * Database: MongoDB Atlas
-* Other: Mongoose, dotenv
+* Other: Mongoose, dotenv, concurrently
 
 ---
 
@@ -34,19 +34,15 @@ cd studySession
 
 ### 2. Install dependencies
 
-#### Client
-
+From the root folder:
 ```bash
-cd client
-npm install
+npm run install-all
 ```
 
-#### Server
-
-```bash
-cd ../server
-npm install
-```
+This installs dependencies for:
+- root (concurrently)
+- client (React app)
+- server (Node/Express API)
 
 ---
 
@@ -57,7 +53,7 @@ Create a `.env` file inside the `server` folder:
 ```env
 MONGO_URI=your_mongodb_connection_string
 ```
-
+NOTE: You must provide your own MongoDB connection string (MongoDB Atlas).
 ---
 
 ### 4. Run the application
@@ -82,21 +78,10 @@ This will start both the frontend and backend using concurrently.
 
 ---
 
-## API Example
-
-### GET /courses
-
-Returns all courses.
-
-### GET /courses/search?search=react&program=IT
-
-Returns filtered courses based on search and program.
-
----
-
-
 ## Future Improvements
 
 * Add update functionality for study sessions
 * Add statistics and visualizations
 * Improve UI/UX
+
+Author: Jessie Jarl Nilsson
